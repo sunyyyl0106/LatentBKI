@@ -1,0 +1,165 @@
+config: !!python/object/new:easydict.EasyDict
+  dictitems:
+    SWA: false
+    baseline_only: false
+    check_val_every_n_epoch: 1
+    checkpoint: pretrained/SPVCNN/best_model.ckpt
+    config_path: config/SPVCNN-semantickitti.yaml
+    dataset_params: &id005 !!python/object/new:easydict.EasyDict
+      dictitems:
+        collate_type: collate_fn_voxel
+        dataset_type: voxel_dataset
+        ignore_label: 0
+        label_mapping: ./config/label_mapping/semantic-kitti.yaml
+        pc_dataset_type: SemanticKITTI
+        seg_labelweights: &id001
+        - 0
+        - 55437630
+        - 320797
+        - 541736
+        - 2578735
+        - 3274484
+        - 552662
+        - 184064
+        - 78858
+        - 240942562
+        - 17294618
+        - 170599734
+        - 6369672
+        - 230413074
+        - 101130274
+        - 476491114
+        - 9833174
+        - 129609852
+        - 4506626
+        - 1168181
+        train_data_loader: &id002 !!python/object/new:easydict.EasyDict
+          dictitems:
+            batch_size: 8
+            data_path: /KITTI/dataset/sequences/
+            dropout_aug: true
+            flip_aug: true
+            num_workers: 8
+            rotate_aug: true
+            scale_aug: true
+            shuffle: true
+            transform_aug: true
+          state:
+            batch_size: 8
+            data_path: /KITTI/dataset/sequences/
+            dropout_aug: true
+            flip_aug: true
+            num_workers: 8
+            rotate_aug: true
+            scale_aug: true
+            shuffle: true
+            transform_aug: true
+        training_size: 19132
+        val_data_loader: &id003 !!python/object/new:easydict.EasyDict
+          dictitems:
+            batch_size: 1
+            data_path: /KITTI/dataset/sequences/
+            dropout_aug: false
+            flip_aug: false
+            num_workers: 8
+            rotate_aug: false
+            scale_aug: false
+            shuffle: false
+            transform_aug: false
+          state:
+            batch_size: 1
+            data_path: /KITTI/dataset/sequences/
+            dropout_aug: false
+            flip_aug: false
+            num_workers: 8
+            rotate_aug: false
+            scale_aug: false
+            shuffle: false
+            transform_aug: false
+      state:
+        collate_type: collate_fn_voxel
+        dataset_type: voxel_dataset
+        ignore_label: 0
+        label_mapping: ./config/label_mapping/semantic-kitti.yaml
+        pc_dataset_type: SemanticKITTI
+        seg_labelweights: *id001
+        train_data_loader: *id002
+        training_size: 19132
+        val_data_loader: *id003
+    debug: false
+    fine_tune: false
+    format_version: 2
+    gpu: &id006
+    - 0
+    log_dir: default
+    model_params: &id007 !!python/object/new:easydict.EasyDict
+      dictitems:
+        cr: 1
+        input_dims: 4
+        layer_num: &id004
+        - 32
+        - 32
+        - 64
+        - 128
+        - 256
+        - 256
+        - 128
+        - 96
+        - 96
+        model_architecture: spvcnn
+        num_class: 20
+        voxel_size: 0.05
+      state:
+        cr: 1
+        input_dims: 4
+        layer_num: *id004
+        model_architecture: spvcnn
+        num_class: 20
+        voxel_size: 0.05
+    monitor: val/mIoU
+    num_vote: 1
+    pretrain2d: false
+    save_top_k: 1
+    seed: 0
+    stop_patience: 50
+    submit_to_server: false
+    test: true
+    train_params: &id008 !!python/object/new:easydict.EasyDict
+      dictitems:
+        learning_rate: 0.24
+        lr_scheduler: CosineAnnealingWarmRestarts
+        max_num_epochs: 64
+        momentum: 0.9
+        nesterov: true
+        optimizer: SGD
+        weight_decay: 0.0001
+      state:
+        learning_rate: 0.24
+        lr_scheduler: CosineAnnealingWarmRestarts
+        max_num_epochs: 64
+        momentum: 0.9
+        nesterov: true
+        optimizer: SGD
+        weight_decay: 0.0001
+  state:
+    SWA: false
+    baseline_only: false
+    check_val_every_n_epoch: 1
+    checkpoint: pretrained/SPVCNN/best_model.ckpt
+    config_path: config/SPVCNN-semantickitti.yaml
+    dataset_params: *id005
+    debug: false
+    fine_tune: false
+    format_version: 2
+    gpu: *id006
+    log_dir: default
+    model_params: *id007
+    monitor: val/mIoU
+    num_vote: 1
+    pretrain2d: false
+    save_top_k: 1
+    seed: 0
+    stop_patience: 50
+    submit_to_server: false
+    test: true
+    train_params: *id008

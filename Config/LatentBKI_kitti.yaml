@@ -1,0 +1,12 @@
+dataset: "semantic_kitti"
+meas_result: True
+with_variance: False
+use_relative_pose: True
+pseduo_discrete: True
+save_map: True
+grid_params:
+  grid_size: [ 400.0, 400.0, 26.0 ]
+  min_bound: [ -40.0, -40.0, -2.6 ]
+  max_bound: [ 40.0, 40.0, 2.6 ]
+filter_size: 3
+ell: 0.5

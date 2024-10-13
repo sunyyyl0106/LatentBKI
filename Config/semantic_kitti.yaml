@@ -1,0 +1,12 @@
+num_classes: 20
+data_dir: "" # defined in SPVCNN kitti data config
+feature_dir: "" # defined in SPVCNN kitti data config
+pca_path: "" # never used
+feature_size: 96
+grid_mask: True
+down_sample_feature: False
+subsample_points: 1
+raw_data: False
+intrinsic: [] # don't use intrinsic
+sequences: [] # defined in SPVCNN kitti data, choose val which only contain sequence 08
+category: [] # defined in SPVCNN kitti data config

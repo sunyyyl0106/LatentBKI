@@ -1,0 +1,27 @@
+num_classes: 10
+data_dir: "/mp3d/real_world"
+feature_dir: 'lseg_feature'
+pca_path: "PCAonGPU/PCA_instance/mp3d_pca_64.pkl"
+feature_size: 64
+grid_mask: True
+down_sample_feature: True
+raw_data: False
+subsample_points: 1
+intrinsic: [8.009776000976562500e+02, 0, 4.731800537109375000e+02, 0, 8.009776000976562500e+02, 3.628266601562500000e+02, 0, 0, 1]
+
+sequences: [
+  "my_house_long",
+]
+
+category: [
+  "wall",
+  "floor",
+  "ceiling",
+  "chair",
+  "table",
+  "TV_screen",
+  "bed",
+  "window",
+  "lightings",
+  "other",
+]

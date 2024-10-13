@@ -1,0 +1,59 @@
+num_classes: 40
+data_dir: "/mp3d/vlmaps_data_dir/vlmaps_dataset/"
+feature_dir: 'lseg_feature'
+pca_path: "PCAonGPU/PCA_instance/mp3d_pca_64.pkl"
+feature_size: 64
+grid_mask: False
+down_sample_feature: True
+raw_data: True
+subsample_points: 1
+intrinsic: [540, 0, 540, 0, 540, 360, 0, 0, 1]
+
+sequences: [
+  '5LpN3gDmAk7_1',
+  'gTV8FGcVJC9_1',
+]
+
+category: [
+  "void",
+  "wall",
+  "floor",
+  "chair",
+  "door",
+  "table",
+  "picture",
+  "cabinet",
+  "cushion",
+  "window",
+  "sofa",
+  "bed",
+  "curtain",
+  "chest_of_drawers",
+  "plant",
+  "sink",
+  "stairs",
+  "ceiling",
+  "toilet",
+  "stool",
+  "towel",
+  "mirror",
+  "tv_monitor",
+  "shower",
+  "column",
+  "bathtub",
+  "counter",
+  "fireplace",
+  "lighting",
+  "beam",
+  "railing",
+  "shelving",
+  "blinds",
+  "gym_equipment",
+  "seating",
+  "board_panel",
+  "furniture",
+  "appliances",
+  "clothes",
+  "objects",
+  # "misc",
+]
