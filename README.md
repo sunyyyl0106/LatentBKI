@@ -16,7 +16,7 @@ There are some package needs manual installation:
 2. [torchsparse](https://github.com/mit-han-lab/torchsparse) (sudo apt-get install libsparsehash-dev, pip install --upgrade git+https://github.com/mit-han-lab/torchsparse.git@v1.4.0)
 3. [pytorch3d](https://github.com/facebookresearch/pytorch3d/blob/main/INSTALL.md#building--installing-from-source)
 
-(Optional) Install [ROS Melodic](https://wiki.ros.org/melodic/Installation/Ubuntu) to visualize map in Rviz
+(Optional) Install [ROS Noetic](https://wiki.ros.org/noetic/Installation/Ubuntu) to visualize map in Rviz
 
 > Note: Also checkout all [dependent codebase](#acknowledgements) if facing any issues.
 
