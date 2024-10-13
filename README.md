@@ -1,5 +1,7 @@
 # LatentBKI
-This repository is the implementation of [Latent BKI](), aiming to reproduce the experiment results shown in the paper.
+This repository is the implementation of [Latent BKI](), aiming to reproduce the experiment results shown in the paper. 
+
+![Teaser](/figs/teaser.png)
 
 ## Installation (test with python 3.7 + torch1.11 + cuda11.3)
 
