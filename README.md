@@ -23,7 +23,7 @@ There are some package needs manual installation:
 ## Data preparation
 
 ### Matterport 3D (MP3D)
-Follow VLMap's [Generate dataset](https://github.com/vlmaps/vlmaps?tab=readme-ov-file#generate-dataset) section to get MP3D sequences. The ground truth semantic generated is a bit incorrect, so we provided a modifcation to obtain correct ground truth data [here](). 
+Follow VLMap's [Generate dataset](https://github.com/vlmaps/vlmaps?tab=readme-ov-file#generate-dataset) section to get MP3D sequences. The ground truth semantic generated is a bit incorrect, so we provided a modifcation to obtain correct ground truth data [here](https://drive.google.com/drive/folders/1dWJXcvHyBimh8KMvA7e3zwApXju6tXTZ?usp=drive_link). 
 
 ### Semantic KITTI
 Follow 2DPASS' [Data Preparation](https://github.com/yanx27/2DPASS?tab=readme-ov-file#data-preparation) section to obtain Semantic KIITI dataset under `Dataset` folder
