@@ -138,3 +138,4 @@ training_log.txt
 *.ckpt
 Models/Lseg/lseg/*
 PCAonGPU/PCA_instance/*
+PCAExperiment/predictions/*
