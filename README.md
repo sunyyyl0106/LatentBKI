@@ -6,7 +6,7 @@ This repository is the implementation of [Latent BKI](), aiming to reproduce the
 ## Installation (test with python 3.7 + torch1.11 + cuda11.3)
 
 ```
-conda env create -f environment.yml
+conda env create -f environment.yml # this may takes some time
 conda activate latentbki_env
 ```
 
