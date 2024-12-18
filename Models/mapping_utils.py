@@ -149,7 +149,12 @@ class GlobalMapContinuous(LatentBKI):
             map_feature = self.global_map[:,3:3+self.latent_dim]
             if self.pca_upsample:
                 map_feature = self.pca_upsample(map_feature)
-            self.global_map = torch.hstack((self.global_map[:,:3].to(self.device), self.decode(map_feature.to(self.device), self.category_feature.to(self.device)))) # (N, 3 + num_classes)
+            if self.category_feature is not None:
+                # mp3d
+                self.global_map = torch.hstack((self.global_map[:,:3].to(self.device), self.decode(map_feature.to(self.device), self.category_feature.to(self.device)))) # (N, 3 + num_classes)
+            else:
+                # kitti
+                self.global_map = torch.hstack((self.global_map[:,:3].to(self.device), self.decode(map_feature.to(self.device), self.category_feature))) 
                     
         self.sum_void_voxel = 0
         N = points.shape[0]
@@ -159,6 +164,12 @@ class GlobalMapContinuous(LatentBKI):
             batch_pred = self.label_points(batch_points, with_variance)
                 
             predictions = torch.vstack((predictions, batch_pred.cpu()))
+            
+            # TODO: testing purpose 
+            # if start > batch_size * 20:
+            #     print("[TEST] Break after 20 batch")
+            #     break
+           # TODO: testing purpose 
         
         print("Point that does not fall in voxel:", self.sum_void_voxel/N, f"[{self.sum_void_voxel}/{N}]")
         return predictions
@@ -189,7 +200,7 @@ class GlobalMapContinuous(LatentBKI):
             nearest_labeled_pc = self.global_map[idx, :].to(self.device) # try label to be feature + variance + confidence
             # transform to postiror predictive distribution
             confidence = nearest_labeled_pc[:,:,-1].reshape(N,K,1)
-            nearest_labeled_pc[:, :, 3+self.latent_dim:3+2*self.latent_dim] = (confidence + 1) / (confidence * confidence) * nearest_labeled_pc[:, :, 3+self.latent_dim:3+2*self.latent_dim]
+            nearest_labeled_pc[:, :, 3+self.latent_dim:3+2*self.latent_dim] = (confidence + 1) / (confidence * confidence) * nearest_labeled_pc[:, :, 3+self.latent_dim:3+2*self.latent_dim] # convert variance
             nearest_labeled_pc[far_dist_mask, :, 3:3+2*self.latent_dim] = 0 # points not fall in voxel has 0 features and variance and confidence
         else:
             nearest_labeled_pc = self.global_map[idx, :].to(self.device) # return, (N, 3+40), which is categoricall logits
@@ -202,7 +213,7 @@ class GlobalMapContinuous(LatentBKI):
         if with_variance:
             pred_features = pred_features_variance[:,:self.latent_dim] 
         else: 
-            # NOTE: if not with_variance, here is (N, 40) logits
+            # NOTE: if not with_variance, here is categorical logits, eg. (N, 40) 
             pred_features = pred_features_variance
             
         # backproject to clip if sample is small

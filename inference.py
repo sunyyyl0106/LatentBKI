@@ -41,9 +41,9 @@ def save_map():
 
 def inference(unlabeld_pc_torch_list, pred_labels_list, gt_labels_list, map_object, results, SAVE_MAP_PATH, with_variance):
     # first save the points
-    torch.save(unlabeld_pc_torch_list, os.path.join(SAVE_MAP_PATH, "unlabeld_pc_torch_list.pt"))
-    torch.save(pred_labels_list, os.path.join(SAVE_MAP_PATH, "pred_labels_list.pt"))
-    torch.save(gt_labels_list, os.path.join(SAVE_MAP_PATH, "gt_labels_list.pt"))
+    torch.save(unlabeld_pc_torch_list, os.path.join(SAVE_MAP_PATH, "unlabeld_pc_torch_list_subsample.pt"))
+    torch.save(pred_labels_list, os.path.join(SAVE_MAP_PATH, "pred_labels_list_subsample.pt"))
+    torch.save(gt_labels_list, os.path.join(SAVE_MAP_PATH, "gt_labels_list_subsample.pt"))
 
     print(f"Inference {current_scene} ... ")
     unlabeld_pc_torch_list = unlabeld_pc_torch_list.to(device=device, non_blocking=True)
@@ -51,7 +51,8 @@ def inference(unlabeld_pc_torch_list, pred_labels_list, gt_labels_list, map_obje
     gt_labels_list = gt_labels_list.to(device=device, non_blocking=True)
     print(gt_labels_list.shape)
     features = map_object.label_points_iterative(unlabeld_pc_torch_list, with_variance=with_variance)
-    torch.save(features.cpu(), os.path.join(SAVE_MAP_PATH, "predcited_features.pt")) # save predicted features, variance, confidence         
+    print("saveing feature with shape:", features.shape)
+    torch.save(features.cpu(), os.path.join(SAVE_MAP_PATH, "predcited_features_subsample.pt")) # save predicted features, variance, confidence         
     
     category_pred = features[:, -1].to(torch.int64).to(device)
     
@@ -126,11 +127,12 @@ MODEL_NAME = "LatentBKI_default"
 # MODEL_NAME = "LatentBKI_realworld"
 # MODEL_NAME = "LatentBKI_vlmap"
 # MODEL_NAME = "LatentBKI_kitti"
-RESULT_SAVE = 'Results/LatentBKI_default_mp3d_3_0.5_64_0.1_1'
-# scenes = ['5LpN3gDmAk7_1' , 'gTV8FGcVJC9_1', ]
-scenes = ['5LpN3gDmAk7_1' ]
+# RESULT_SAVE = 'Results/LatentBKI_kitti_semantic_kitti_3_0.5_96_0.2_1_full_rebuttal'
 # scenes = ['08']
-WIHT_VARIANCE = False
+RESULT_SAVE = '/workspace/LatentBKI_public/LatentBKI/Results/LatentBKI_default_mp3d_3_0.5_64_0.1_1_2024-12-16_11-11-52'
+# scenes = ['5LpN3gDmAk7_1' , 'gTV8FGcVJC9_1', ]
+scenes = ['gTV8FGcVJC9_1' ]
+WITH_VARIANCE = True
 DISCRETE = True
 BATCH_SIZE = 100000
 
@@ -140,7 +142,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print("device is ", device)
 
 print("---------------")
-print("with variance: ", WIHT_VARIANCE)
+print("with variance: ", WITH_VARIANCE)
 print("discrete_knn: ", DISCRETE)
 print("result save:", RESULT_SAVE)
 print("batch size:", BATCH_SIZE)
@@ -154,7 +156,7 @@ with open(model_params_file, "r") as stream:
         MEAS_RESULT = model_params["meas_result"]
         SAVE_MAP = model_params["save_map"]
         ELL = model_params["ell"]
-        WITH_VARIANCE = model_params['with_variance']
+        # WITH_VARIANCE = model_params['with_variance']
         USE_RELATIVE_POSE = model_params['use_relative_pose']
         PSEDUO_DISCRETE = model_params['pseduo_discrete']
         FILTER_SIZE = model_params["filter_size"]
@@ -241,6 +243,17 @@ for current_scene in scenes:
     pred_labels_list = torch.load(f"{folder}/pred_labels_list.pt")
     gt_labels_list = torch.load(f"{folder}/gt_labels_list.pt")
     map_object.global_map = torch.tensor(np.load(f"{folder}/global_map_latent.npy"), dtype=torch.float)
+    
+    # TODO: Subsample eval points 
+    print("[TEST] Subsampling points ...")
+    # using a subsample to calculate the statistics
+    np.random.seed(42) # reproducible
+    idx = np.random.choice(gt_labels_list.shape[0], int(gt_labels_list.shape[0]*0.1), replace=False)
+    gt_labels_list = gt_labels_list[idx]
+    pred_labels_list = pred_labels_list[idx]
+    unlabeld_pc_torch_list = unlabeld_pc_torch_list[idx]
+    # using a subsample to calculate the statistics
+    print(gt_labels_list.shape, pred_labels_list.shape, unlabeld_pc_torch_list.shape)
     
     print("map shape:", map_object.global_map.shape)
 

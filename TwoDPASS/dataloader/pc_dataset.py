@@ -63,19 +63,24 @@ class SemanticKITTI(data.Dataset):
         self.frame_id = []
 
         for i_folder in split:
-            self.im_idx += absoluteFilePaths('/'.join([data_path, str(i_folder).zfill(2), 'velodyne']), num_vote)
+            # NOTE: Modified to only use first 1000 frames to save experiment time
+            NUM_PER_SCENE = 1000
+            scene_im_idx = []
+            scene_im_idx += absoluteFilePaths('/'.join([data_path, str(i_folder).zfill(2), 'velodyne']), num_vote)
+            # self.im_idx += absoluteFilePaths('/'.join([data_path, str(i_folder).zfill(2), 'velodyne']), num_vote)
+            self.im_idx += scene_im_idx[:NUM_PER_SCENE]
             calib_path = os.path.join(data_path, str(i_folder).zfill(2), "calib.txt")
             calib = self.read_calib(calib_path)
             proj_matrix = np.matmul(calib["P2"], calib["Tr"])
             self.proj_matrix[i_folder] = proj_matrix
             
             # load pose assume num_vote = 1
-            pose = np.loadtxt(os.path.join(data_path, str(i_folder).zfill(2), 'poses.txt'))
+            pose = np.loadtxt(os.path.join(data_path, str(i_folder).zfill(2), 'poses.txt'))[:NUM_PER_SCENE]
             self.poses = np.vstack((self.poses, pose))
             Tr = calib["Tr"].reshape(-1,)
             Tr = np.repeat(np.expand_dims(Tr, axis=1).T,pose.shape[0],axis=0)
             self.Tr = np.vstack((self.Tr, Tr))
-            self.scene_id = [str(i_folder).zfill(2)] * pose.shape[0]
+            self.scene_id += [str(i_folder).zfill(2)] * pose.shape[0]
             frames = [str(i).zfill(6) for i in range(pose.shape[0])]
             self.frame_id.extend(frames)
             

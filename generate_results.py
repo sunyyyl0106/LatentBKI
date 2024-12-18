@@ -128,10 +128,10 @@ def inference(unlabeld_pc_torch_list, pred_labels_list, gt_labels_list, map_obje
 
 ########################## main script ############################
 
-# MODEL_NAME = "LatentBKI_default"
+MODEL_NAME = "LatentBKI_default"
 # MODEL_NAME = "LatentBKI_realworld"
 # MODEL_NAME = "LatentBKI_vlmap"
-MODEL_NAME = "LatentBKI_kitti"
+# MODEL_NAME = "LatentBKI_kitti"
 
 print("Model is:", MODEL_NAME)
 
@@ -172,6 +172,9 @@ with open(data_params_file, "r") as stream:
         SUBSAMPLE = data_params['subsample_points']
         SEQUENCES = data_params['sequences']
         INTRINSIC = data_params['intrinsic']
+        if MODEL_NAME == "LatentBKI_vlmap":
+            # vlamp comparison uses different point filtering method
+            GRID_MASK = False 
     except yaml.YAMLError as exc:
         print(exc)
         
@@ -290,8 +293,8 @@ unlabeld_pc_torch_list = torch.empty(0,3)
 pred_labels_list = torch.empty(0)
 gt_labels_list = torch.empty(0)
 
-# for idx in tqdm(range(len(test_ds))):
-for idx in tqdm(range(0, 10, 1)):
+for idx in tqdm(range(len(test_ds))):
+# for idx in tqdm(range(0, 50, 1)):
 # for idx in tqdm([0,50]):
     with torch.no_grad():
         # Load data
@@ -390,6 +393,29 @@ for idx in tqdm(range(0, 10, 1)):
         # update map using observations
         map_object.update_map(labeled_pc_torch)
         total_t += time.time() - start_t
+        
+        ###### time update map ######
+        # previous update is a warm up
+        # update_start = time.time()
+        # map_object.update_map(labeled_pc_torch)
+        # update_end = time.time()
+        # print(f"Warm up update time: {update_end - update_start}")
+         
+        # time_list = []
+        # point_size = 500000
+        # print("Timing update map ...")
+        # print(labeled_pc_torch.shape)
+        # for i in range(10):
+        #     update_start = time.time()
+        #     rand_points = labeled_pc_torch[:point_size] + torch.randn(point_size, 67).to(device)
+        #     map_object.update_map(rand_points)
+        #     update_end = time.time()
+        #     print(f"Update time {i}: {update_end - update_start}")
+        #     time_list.append(update_end - update_start)
+        # print(f"Average update time: {np.mean(time_list) * 1000} / ms")
+        # raise NotImplementedError("This is only for time update map")
+        ###### time update map ######
+        
 
         if MEAS_RESULT and DATASET != "realworld":
             # decode pred_labels
