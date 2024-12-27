@@ -128,10 +128,11 @@ def inference(unlabeld_pc_torch_list, pred_labels_list, gt_labels_list, map_obje
 
 ########################## main script ############################
 
-MODEL_NAME = "LatentBKI_default"
+# MODEL_NAME = "LatentBKI_default"
 # MODEL_NAME = "LatentBKI_realworld"
 # MODEL_NAME = "LatentBKI_vlmap"
 # MODEL_NAME = "LatentBKI_kitti"
+MODEL_NAME = "Heuristic_baseline"
 
 print("Model is:", MODEL_NAME)
 
@@ -172,7 +173,7 @@ with open(data_params_file, "r") as stream:
         SUBSAMPLE = data_params['subsample_points']
         SEQUENCES = data_params['sequences']
         INTRINSIC = data_params['intrinsic']
-        if MODEL_NAME == "LatentBKI_vlmap":
+        if MODEL_NAME == "LatentBKI_vlmap" or MODEL_NAME == "Heuristic_baseline":
             # vlamp comparison uses different point filtering method
             GRID_MASK = False 
     except yaml.YAMLError as exc:
@@ -220,9 +221,7 @@ if DATASET != 'semantic_kitti':
         down_sampling_fn = seg_module.down_sampling
         back_project_fn = seg_module.backproject_to_clip
 else:
-    print("before SPVCNN_Module")
     seg_module = SPVCNN_Module(device)
-    print("after SPVCNN_Module")
 
 # Load data set
 if DATASET == "mp3d":
@@ -259,7 +258,12 @@ else:
     raise ValueError("Invalid Dataset")
     
 # Create map object
-map_object = GlobalMapContinuous(
+if MODEL_NAME == "Heuristic_baseline":
+    map_type = GlobalMapHeuristic
+else:
+    map_type = GlobalMapContinuous
+    
+map_object = map_type(
     torch.tensor([int(p) for p in GRID_PARAMS['grid_size']], dtype=torch.long).to(device),  # Grid size
     torch.tensor(GRID_PARAMS['min_bound']).to(device),  # Lower bound
     torch.tensor(GRID_PARAMS['max_bound']).to(device),  # Upper bound
@@ -294,7 +298,7 @@ pred_labels_list = torch.empty(0)
 gt_labels_list = torch.empty(0)
 
 for idx in tqdm(range(len(test_ds))):
-# for idx in tqdm(range(0, 50, 1)):
+# for idx in tqdm(range(0, 1000, 10)):
 # for idx in tqdm([0,50]):
     with torch.no_grad():
         # Load data
@@ -331,7 +335,7 @@ for idx in tqdm(range(len(test_ds))):
         # NOTE: subsample ranomd points for heldout calculation 
         if DATASET != 'realworld':
             # additional processing for comparison with VLMap
-            if MODEL_NAME == "LatentBKI_vlmap":
+            if MODEL_NAME == "LatentBKI_vlmap" or MODEL_NAME == "Heuristic_baseline":
                 # subsample 1% input points
                 depth_sample_rate = 100
                 np.random.seed(42)

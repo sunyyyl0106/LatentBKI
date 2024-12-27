@@ -236,3 +236,44 @@ class GlobalMapContinuous(LatentBKI):
             predictions = predictions.reshape(-1,1)
         
         return predictions
+    
+
+class GlobalMapHeuristic(GlobalMapContinuous):
+    def __init__(self, grid_size, min_bound, max_bound, filter_size, ell, category_feature, decode=None, pca_upsample=None, num_classes=42, latent_dim=512, device="cpu", datatype=torch.float32, delete_time=10, use_relative_pose=True, pseduo_discrete=True):
+        super().__init__(grid_size, min_bound, max_bound, filter_size, ell, category_feature, decode, pca_upsample, num_classes, latent_dim, device, datatype, delete_time, use_relative_pose, pseduo_discrete)
+    
+    # override the latent_update_map function
+    def latent_map_update(self, current_map, point_cloud, max_bound=None, min_bound=None):
+        # mean_map, mean_confidence_map, variance_map, variance_confidence_map = current_map[0], current_map[1], current_map[2], current_map[3]
+        mean_map, variance_map, confidence_map = current_map[0], current_map[1], current_map[2]
+        
+        if min_bound is None:
+            min_bound = self.min_bound
+        if max_bound is None:
+            max_bound = self.max_bound
+            
+        grid_pc = self.grid_ind(point_cloud, min_bound=min_bound, max_bound=max_bound)
+            
+        # construct neighbor grids
+        neighbor_grid_pc = self.construct_neighbor_grid(grid_pc) # (N, f^3, 3+feature)
+        
+        # construct valid mask
+        valid_input_mask = torch.all((neighbor_grid_pc[:,:,:3] < self.grid_size) & (neighbor_grid_pc[:,:,:3] >= torch.tensor([0,0,0], device=self.device)), axis=-1)
+        
+        # # turn index into position in metric space
+        neighbor_grid_metric = self.grid_to_continuous(neighbor_grid_pc, min_bound)
+        
+        # select the valid grids
+        neighbor_grid_pc = neighbor_grid_pc[valid_input_mask]
+        valid_neighbor_grid_indices = [*neighbor_grid_pc[:,:3].T.to(torch.long)] # (3+feature, m) list contain indices in each coordinate
+        neighbor_grid_metric = neighbor_grid_metric[valid_input_mask] # (m, xyz+feature)
+        
+        # compute sum of weight for each voxel in this frame
+        k_bar_map = torch.zeros_like(confidence_map, dtype=self.dtype, device=self.device).index_put_(valid_neighbor_grid_indices[:3], torch.ones(neighbor_grid_pc.shape[0],1).to(torch.float).to(self.device), accumulate=False) 
+        
+        mean_map = mean_map.index_put_(valid_neighbor_grid_indices[:3], neighbor_grid_metric[:,3:], accumulate=False)
+        
+        # update confidence map
+        confidence_map += k_bar_map
+        
+        return (mean_map, variance_map, confidence_map)

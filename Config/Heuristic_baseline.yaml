@@ -1,0 +1,12 @@
+dataset: "mp3d"
+meas_result: True
+with_variance: False
+use_relative_pose: True
+pseduo_discrete: True
+save_map: True
+grid_params:
+  grid_size: [ 240.0, 240.0, 80.0 ]
+  min_bound: [-6.0, -6.0, -2.0]
+  max_bound: [ 6.0, 6.0, 2.0]
+filter_size: 1
+ell: 0.5
