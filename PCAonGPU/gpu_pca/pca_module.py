@@ -1,4 +1,8 @@
-"""This module provides an implementation of Incremental Principal
+"""
+This file is modified based on the open-source repository PCAonGPU, available at:
+https://github.com/dnhkng/PCAonGPU.
+
+This module provides an implementation of Incremental Principal
 Components Analysis (IPCA) using PyTorch for GPU acceleration.
 IPCA is useful for datasets too large to fit into memory, as it
 processes data in smaller chunks or batches.
