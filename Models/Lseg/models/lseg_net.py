@@ -1,8 +1,7 @@
 """
-This code is adapted from the open-source project [Project Name]
-Original source: [URL to the original code repository]
-Author(s): [Original Author(s) Names]
-License: [License Type, e.g., MIT, GPL]
+This code is adapted from the open-source project VLMaps
+Original source: https://github.com/vlmaps/vlmaps
+License: MIT License
 """
 import math
 import types
