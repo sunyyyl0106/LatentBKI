@@ -1,5 +1,5 @@
 # LatentBKI
-This repository is the implementation of [Latent BKI](), aiming to reproduce the experiment results shown in the paper. 
+This repository is the implementation of [Latent BKI](https://arxiv.org/abs/2410.11783), aiming to reproduce the experiment results shown in the paper. 
 
 ![Teaser](/figs/teaser.png)
 
